@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import {withFormik, Form, Field} from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 
-const Form = ({values, errors, touched}) => {
+const UserForm = ({values, errors, touched}) => {
+    // const [user, setUser] = useState([]);
     
     return (
         <div>
@@ -38,8 +40,8 @@ const Form = ({values, errors, touched}) => {
     )
 };
 
-const FormikAnimalForm = withFormik({
-    mapPropsToValues({name, email, }) {
+const FormikUserForm = withFormik({
+    mapPropsToValues({name, email, terms }) {
         return {
             name: name || '',
             email: '',
@@ -51,9 +53,19 @@ const FormikAnimalForm = withFormik({
         name: Yup.string().required(),
         email: Yup.string().required(),
         password: Yup.string().required(),
-        terms: yup.boolean().oneOf([true], 'Must Accept Terms of Service'),
+        terms: Yup.boolean().oneOf([true], 'Must Accept Terms of Service'),
     }),
-})
+   handleSubmit(values, {setStatus, resetForm}) {
+       console.log(values);
+       axios
+      .post("https://reqres.in/api/users/", values)
+      .then(res => {
+        setStatus(res.data);
+        resetForm();
+    })
+    .catch(err => console.log(err.response));
+   }
+})(UserForm);
 
 
-export default FormikForm;
+export default FormikUserForm;
